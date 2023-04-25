@@ -20,8 +20,10 @@ app mdl =
                 [ Html.div
                     { css
                         | marginRight = Css.Px 100 , width = Css.Px 300 , color = "#888" , fontSize = Css.FsXXLarge
+                        , justifyContent = Css.JcEnd
                     }
-                    [] [ Html.text "" ]
+                    []
+                    [ Html.text ( if mdl.pause then "Pause" else "" ) ]
                 , Html.div css [] [ tower mdl.tower mdl.anchor mdl.tmino ]
                 , Html.div
                     { css
@@ -46,8 +48,6 @@ app mdl =
                             }
                             [ onClick Msg.Reload ] [ Html.text "Restart" ]
                         ]
-
-
                       else next mdl.next
                     ]
                 ]

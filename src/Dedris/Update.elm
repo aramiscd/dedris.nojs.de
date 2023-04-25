@@ -6,6 +6,7 @@ module Dedris.Update exposing
     , rotateRight
     , newTmino
     , reload
+    , togglePause
     )
 
 import Dedris.Model exposing ( Model )
@@ -89,9 +90,14 @@ reload mdl =
       , score = 0
       , gameOver = False
       , tickerMillis = 1000
+      , pause = False
       }
     , Cmd.none
     )
+
+
+togglePause : Model -> ( Model , Cmd Msg )
+togglePause mdl = ( { mdl | pause = not mdl.pause } , Cmd.none )
 
 
 

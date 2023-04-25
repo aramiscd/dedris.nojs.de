@@ -32,6 +32,7 @@ init () =
       , score = 0
       , gameOver = False
       , tickerMillis = 1000
+      , pause = False
       }
     , Cmd.batch
         [ Random.generate Msg.NewTmino Tmino.random
@@ -48,25 +49,32 @@ subscriptions mdl = Sub.batch
 
 
 update : Msg -> Model -> ( Model , Cmd Msg )
-update msg mdl = case msg of
-    Msg.KeyDown { key , shiftKey } -> case ( key , shiftKey ) of
-        -- Pfeiltasten
-        ( Just "ArrowUp" , False ) -> Update.rotateRight mdl
-        ( Just "ArrowUp" , True ) -> Update.rotateLeft mdl
-        ( Just "ArrowLeft" , False ) -> Update.moveLeft mdl
-        ( Just "ArrowRight" , False ) -> Update.moveRight mdl
-        ( Just "ArrowDown" , False ) -> Update.moveDown mdl
-        -- hjkl
-        ( Just "k" , False ) -> Update.rotateRight mdl
-        ( Just "K" , True ) -> Update.rotateLeft mdl
-        ( Just "h" , False ) -> Update.moveLeft mdl
-        ( Just "l" , False ) -> Update.moveRight mdl
-        ( Just "j" , False ) -> Update.moveDown mdl
-        --
+update msg mdl =
+    if mdl.pause
+    then case msg of
+        Msg.KeyDown _ -> Update.togglePause mdl
         _ -> ( mdl , Cmd.none )
-    Msg.NewTmino tmino -> Update.newTmino tmino mdl
-    Msg.Tick -> Update.moveDown mdl
-    Msg.Reload -> Update.reload mdl
+    else case msg of
+        Msg.KeyDown { key , shiftKey } -> case ( key , shiftKey ) of
+            -- Pfeiltasten
+            ( Just "ArrowUp" , False ) -> Update.rotateRight mdl
+            ( Just "ArrowUp" , True ) -> Update.rotateLeft mdl
+            ( Just "ArrowLeft" , False ) -> Update.moveLeft mdl
+            ( Just "ArrowRight" , False ) -> Update.moveRight mdl
+            ( Just "ArrowDown" , False ) -> Update.moveDown mdl
+            -- hjkl
+            ( Just "k" , False ) -> Update.rotateRight mdl
+            ( Just "K" , True ) -> Update.rotateLeft mdl
+            ( Just "h" , False ) -> Update.moveLeft mdl
+            ( Just "l" , False ) -> Update.moveRight mdl
+            ( Just "j" , False ) -> Update.moveDown mdl
+            -- Leertaste
+            ( Just " " , False ) -> Update.togglePause mdl
+            --
+            _ -> ( mdl , Cmd.none )
+        Msg.NewTmino tmino -> Update.newTmino tmino mdl
+        Msg.Tick -> Update.moveDown mdl
+        Msg.Reload -> Update.reload mdl
 
 
 -- update_ : Msg -> Model -> ( Model , Cmd Msg )

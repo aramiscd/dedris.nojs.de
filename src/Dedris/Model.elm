@@ -12,4 +12,5 @@ type alias Model =
     , score : Int
     , gameOver : Bool
     , tickerMillis : Float
+    , pause : Bool
     }
