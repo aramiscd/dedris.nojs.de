@@ -73,7 +73,7 @@ newTmino type_ mdl =
             | tmino = mdl.next
             , next = Tmino.new type_
             , anchor = initialAnchor
-            , tickerMillis = mdl.tickerMillis * 0.99
+            , tickerMillis = mdl.tickerMillis * 0.999
           }
         , Cmd.none
         )
