@@ -7,9 +7,12 @@ module Dedris.Update exposing
     , newTmino
     , reload
     , togglePause
+    , viewport
+    , activeMotion
     )
 
 import Dedris.Model exposing ( Model )
+import Dedris.Motion as Motion exposing ( Motion )
 import Dedris.Msg as Msg exposing ( Msg )
 import Dedris.Tetromino as Tmino exposing ( Tetromino )
 import Dedris.Tower as Tower
@@ -91,6 +94,8 @@ reload mdl =
       , gameOver = False
       , tickerMillis = 1000
       , pause = False
+      , viewport = { height = mdl.viewport.height , width = mdl.viewport.width }
+      , activeMotion = Motion.None
       }
     , Cmd.none
     )
@@ -98,6 +103,20 @@ reload mdl =
 
 togglePause : Model -> ( Model , Cmd Msg )
 togglePause mdl = ( { mdl | pause = not mdl.pause } , Cmd.none )
+
+
+viewport : { height : Int , width : Int } -> Model -> ( Model , Cmd Msg )
+viewport vp mdl = ( { mdl | viewport = vp } , Cmd.none )
+
+
+activeMotion : Motion -> Model -> ( Model , Cmd Msg )
+activeMotion motion mdl = case motion of
+    Motion.None -> ( { mdl | activeMotion = Motion.None } , Cmd.none )
+    Motion.MoveLeft -> moveLeft { mdl | activeMotion = Motion.MoveLeft }
+    Motion.MoveRight -> moveRight { mdl | activeMotion = Motion.MoveRight }
+    Motion.MoveDown -> moveDown { mdl | activeMotion = Motion.MoveDown }
+    Motion.RotateLeft -> rotateLeft { mdl | activeMotion = Motion.RotateLeft }
+    Motion.RotateRight -> rotateRight { mdl | activeMotion = Motion.RotateRight }
 
 
 

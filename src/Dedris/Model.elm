@@ -2,6 +2,7 @@ module Dedris.Model exposing ( Model )
 
 import Dedris.Tetromino as Tmino exposing ( Tetromino )
 import Dedris.Tower as Tower exposing ( Tower )
+import Dedris.Motion as Motion exposing ( Motion )
 
 
 type alias Model =
@@ -13,4 +14,6 @@ type alias Model =
     , gameOver : Bool
     , tickerMillis : Float
     , pause : Bool
+    , viewport : { height : Int , width : Int }
+    , activeMotion : Motion
     }

@@ -1,10 +1,11 @@
 module Dedris.View exposing ( app )
 
 import Ari.Css as Css exposing ( css )
+import Ari.Events exposing ( onClick , onTouchStart , onTouchEnd )
 import Ari.Html as Html
-import Ari.Events exposing ( onClick )
 import Browser
 import Dedris.Model as Model exposing ( Model )
+import Dedris.Motion as Motion exposing ( Motion )
 import Dedris.Msg as Msg exposing ( Msg )
 import Dedris.Tetromino as Tmino exposing ( Tetromino )
 import Dedris.Tower as Tower exposing ( Tower )
@@ -15,45 +16,32 @@ app : Model -> Browser.Document Msg
 app mdl =
     { title = "Dedris"
     , body =
-        [ Html.div { css | minHeight = Css.Vh 100 , bgColor = "#212121" , justifyContent = Css.JcCenter } []
-            [ Html.div { css | marginTop = Css.Px 100 , fontFamily = "monospace" } []
-                [ Html.div
-                    { css
-                        | marginRight = Css.Px 100 , width = Css.Px 300 , color = "#888" , fontSize = Css.FsXXLarge
-                        , justifyContent = Css.JcEnd
-                    }
-                    []
-                    [ Html.text ( if mdl.pause then "Pause" else "" ) ]
-                , Html.div css [] [ tower mdl.tower mdl.anchor mdl.tmino ]
-                , Html.div
-                    { css
-                        | marginLeft = Css.Px 100 , width = Css.Px 300 , color = "#888" , fontSize = Css.FsXXLarge
-                        , flexDirection = Css.FdColumn
-                    }
-                    []
-                    [ Html.div css [] [ Html.text ( "Score " ++ String.fromInt mdl.score ) ]
-                    , if mdl.gameOver
-                      then Html.div { css | flexDirection = Css.FdColumn } []
-                        [ Html.div { css | color = "#f50057" , marginTop = Css.Px 30 } [] [ Html.text "Game Over!" ]
-                        , Html.div
-                            { css
-                                | bgColor = "#388e3c"
-                                , color = "white"
-                                , marginTop = Css.Px 30
-                                , paddingBottom = Css.Px 10
-                                , paddingLeft = Css.Px 20
-                                , paddingRight = Css.Px 20
-                                , paddingTop = Css.Px 10
-                                , cursor = "pointer"
-                            }
-                            [ onClick Msg.Reload ] [ Html.text "Restart" ]
-                        ]
-                      else next mdl.next
-                    ]
-                ]
+        [ Html.div
+            { css | height = Css.Px mdl.viewport.height , bgColor = "#212121" , justifyContent = Css.JcCenter
+            , alignItems = Css.AiCenter , fontFamily = "monospace" , userSelect = Css.UsNone } []
+            [ tower mdl
+            , touchOverlay mdl
             ]
         ]
     }
+
+
+msgScore : Int -> Html Msg
+msgScore score = Html.div { css | marginRight = Css.Px 10 , marginTop = Css.Px 5 } []
+    [ Html.text ( "Score " ++ String.fromInt score ) ]
+
+
+msgPause : Bool -> Html Msg
+msgPause pause = Html.div { css | marginLeft = Css.Px 10 , marginTop = Css.Px 5 } []
+    [ Html.text ( if pause then "Pause" else "" ) ]
+
+
+msgGameOver : Html Msg
+msgGameOver = Html.div
+    { css
+        | color = "#f50057" , fontSize = Css.FsXXXLarge , marginBottom = Css.Px 60 , bgColor = "rgb(0,0,0,0.6)"
+        , paddingBottom = Css.Px 20 , paddingLeft = Css.Px 40 , paddingRight = Css.Px 40 , paddingTop = Css.Px 20
+    } [] [ Html.text "Game over!" ]
 
 
 next : Tetromino -> Html Msg
@@ -70,23 +58,35 @@ next tmino =
             |> Html.div { css | flexDirection = Css.FdColumn , marginTop = Css.Px 30 } []
 
 
-tower : Tower -> { row : Int , col : Int } -> Tetromino -> Html Msg
-tower t anchor tmino = List.range 0 19
-    |> List.map
-        ( \ row -> List.range 0 9
-            |> List.map ( \ col -> t |> Tower.set anchor tmino |> Tower.get { row = row , col = col } |> block )
-            |> Html.div css []
-        )
-    |> Html.div { css | flexDirection = Css.FdColumn } []
+tower : Model -> Html Msg
+tower mdl = List.range 0 19 |> List.map
+    ( \ row -> List.range 0 9 |> List.map
+        ( \ col -> mdl.tower |> Tower.set mdl.anchor mdl.tmino |> Tower.get { row = row , col = col }
+            |> block ( blockSize mdl )
+        ) |> Html.div css []
+    )
+    |> ( \ blocks -> Html.div { css | bgColor = "#424242" } []
+        [ Html.div css [] [ Html.div { css | flexDirection = Css.FdColumn } [] blocks ]
+        , Html.div
+            { css
+                | position = Css.PAbsolute , width = Css.Px ( Tower.width * blockSize mdl )
+                , bgColor = "transparent" , color = "white" , justifyContent = Css.JcSpaceBetween
+                , fontSize = fontSize mdl
+            } []
+            [ msgPause mdl.pause
+            , msgScore mdl.score
+            ]
+        ]
+       )
 
 
-block : Maybe Tmino.Type -> Html Msg
-block tmino = Html.div
+block : Int -> Maybe Tmino.Type -> Html Msg
+block size tmino = Html.div
     { css
-        | width = Css.Px 35
-        , height = Css.Px 35
+        | width = Css.Px size
+        , height = Css.Px size
         , bgColor = case tmino of
-            Nothing -> "#424242"
+            Nothing -> "inherit"
             Just Tmino.I -> "#00b8d4"
             Just Tmino.J -> "#2962ff"
             Just Tmino.L -> "#ff6d00"
@@ -116,3 +116,65 @@ blockPreview tmino = Html.div
         }
         []
         []
+
+
+blockSize : Model -> Int
+blockSize mdl =  min ( mdl.viewport.width // Tower.width ) ( mdl.viewport.height // Tower.height )
+
+
+fontSize : Model -> Css.FontSize
+fontSize mdl =
+    if blockSize mdl < 15
+    then Css.FsXXSmall
+    else if blockSize mdl < 20 then Css.FsXSmall
+    else if blockSize mdl < 25 then Css.FsSmall
+    else if blockSize mdl < 30 then Css.FsMedium
+    else if blockSize mdl < 35 then Css.FsLarge
+    else if blockSize mdl < 40 then Css.FsXLarge
+    else if blockSize mdl < 45 then Css.FsXXLarge
+    else Css.FsXXXLarge
+
+
+touchOverlay : Model -> Html Msg
+touchOverlay mdl = Html.div
+    { css | position = Css.PAbsolute , flexDirection = Css.FdColumn , width = Css.Px mdl.viewport.width
+    , height = Css.Px mdl.viewport.height , justifyContent = Css.JcCenter , alignItems = Css.AiCenter
+    , bgColor = if mdl.gameOver then "rgb(0,0,0,0.7)" else "transparent"
+    } []
+    ( if mdl.gameOver
+      then [ msgGameOver , btnRestart ]
+      else
+        [ Html.div css []
+            [ Html.div
+                { css | width = Css.Px ( mdl.viewport.width // 2 ) , height = Css.Px ( mdl.viewport.height // 2 ) }
+                [ onTouchStart ( Msg.ActiveMotion Motion.RotateLeft ) , onTouchEnd ( Msg.ActiveMotion Motion.None ) ]
+                []
+            , Html.div
+                { css | width = Css.Px ( mdl.viewport.width // 2 ) , height = Css.Px ( mdl.viewport.height // 2 ) }
+                [ onTouchStart ( Msg.ActiveMotion Motion.RotateRight ) , onTouchEnd ( Msg.ActiveMotion Motion.None ) ]
+                []
+            ]
+        , Html.div css []
+            [ Html.div
+                { css | width = Css.Px ( mdl.viewport.width // 2 ) , height = Css.Px ( mdl.viewport.height // 3 ) }
+                [ onTouchStart ( Msg.ActiveMotion Motion.MoveLeft ) , onTouchEnd ( Msg.ActiveMotion Motion.None ) ]
+                []
+            , Html.div
+                { css | width = Css.Px ( mdl.viewport.width // 2 ) , height = Css.Px ( mdl.viewport.height // 3 ) }
+                [ onTouchStart ( Msg.ActiveMotion Motion.MoveRight ) , onTouchEnd ( Msg.ActiveMotion Motion.None ) ]
+                []
+            ]
+        , Html.div { css | width = Css.Px mdl.viewport.width , height = Css.Px ( mdl.viewport.height // 6 ) }
+            [ onTouchStart ( Msg.ActiveMotion Motion.MoveDown ) , onTouchEnd ( Msg.ActiveMotion Motion.None ) ]
+            []
+        ]
+    )
+
+
+btnRestart : Html Msg
+btnRestart = Html.div
+    { css
+        | paddingBottom = Css.Px 30 , paddingLeft = Css.Px 60 , paddingRight = Css.Px 60 , paddingTop = Css.Px 30
+        , bgColor = "#388e3c" , color = "white" , cursor = "pointer" , fontSize = Css.FsXXXLarge
+    }
+    [ onClick Msg.Reload ] [ Html.text "Restart" ]

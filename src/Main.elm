@@ -1,8 +1,10 @@
 module Main exposing ( main )
 
 import Browser
+import Browser.Dom
 import Browser.Events
 import Dedris.Model exposing ( Model )
+import Dedris.Motion as Motion exposing ( Motion )
 import Dedris.Msg as Msg exposing ( Msg )
 import Dedris.Tetromino as Tmino exposing ( Tetromino )
 import Dedris.Tower as Tower
@@ -11,6 +13,7 @@ import Dedris.View as View
 import Json.Decode
 import Keyboard.Event exposing ( decodeKeyboardEvent )
 import Random
+import Task
 import Time
 
 
@@ -33,10 +36,13 @@ init () =
       , gameOver = False
       , tickerMillis = 1000
       , pause = False
+      , viewport = { height = 0 , width = 0 }
+      , activeMotion = Motion.None
       }
     , Cmd.batch
         [ Random.generate Msg.NewTmino Tmino.random
         , Random.generate Msg.NewTmino Tmino.random
+        , Task.perform ( Msg.Viewport << viewportShim ) Browser.Dom.getViewport
         ]
     )
 
@@ -45,6 +51,15 @@ subscriptions : Model -> Sub Msg
 subscriptions mdl = Sub.batch
     [ Browser.Events.onKeyDown ( Json.Decode.map Msg.KeyDown decodeKeyboardEvent )
     , Time.every mdl.tickerMillis ( \ _ -> Msg.Tick )
+    , Browser.Events.onResize ( \ width height -> Msg.Viewport { height = height , width = width } )
+    , case mdl.activeMotion of
+        -- todo
+        Motion.None -> Sub.none
+        Motion.MoveLeft -> Time.every 200 ( \ _ -> Msg.MoveLeft )
+        Motion.MoveRight -> Time.every 200 ( \ _ -> Msg.MoveRight )
+        Motion.MoveDown -> Time.every 50 ( \ _ -> Msg.MoveDown )
+        Motion.RotateLeft -> Time.every 200 ( \ _ -> Msg.RotateLeft )
+        Motion.RotateRight -> Time.every 200 ( \ _ -> Msg.RotateRight )
     ]
 
 
@@ -55,6 +70,16 @@ update msg mdl =
         Msg.KeyDown _ -> Update.togglePause mdl
         _ -> ( mdl , Cmd.none )
     else case msg of
+        Msg.ActiveMotion motion -> Update.activeMotion motion mdl
+        Msg.MoveDown -> Update.moveDown mdl
+        Msg.MoveLeft -> Update.moveLeft mdl
+        Msg.MoveRight -> Update.moveRight mdl
+        Msg.NewTmino tmino -> Update.newTmino tmino mdl
+        Msg.Reload -> Update.reload mdl
+        Msg.RotateLeft -> Update.rotateLeft mdl
+        Msg.RotateRight -> Update.rotateRight mdl
+        Msg.Tick -> Update.moveDown mdl
+        Msg.Viewport vp -> Update.viewport vp mdl
         Msg.KeyDown { key , shiftKey } -> case ( key , shiftKey ) of
             -- Pfeiltasten
             ( Just "ArrowUp" , False ) -> Update.rotateRight mdl
@@ -72,10 +97,15 @@ update msg mdl =
             ( Just " " , False ) -> Update.togglePause mdl
             --
             _ -> ( mdl , Cmd.none )
-        Msg.NewTmino tmino -> Update.newTmino tmino mdl
-        Msg.Tick -> Update.moveDown mdl
-        Msg.Reload -> Update.reload mdl
 
 
 -- update_ : Msg -> Model -> ( Model , Cmd Msg )
 -- update_ msg mdl = update ( Debug.log "msg" msg ) mdl
+
+
+
+-- Helpers
+
+
+viewportShim : Browser.Dom.Viewport -> { height : Int , width : Int }
+viewportShim vp = { height = floor vp.viewport.height , width = floor vp.viewport.width }

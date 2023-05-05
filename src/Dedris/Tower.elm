@@ -5,6 +5,8 @@ module Dedris.Tower exposing
     , set
     , fits
     , shrink
+    , height
+    , width
     )
 
 import Array exposing ( Array )
