@@ -16,38 +16,60 @@ module Dedris.Tetromino exposing
 import Random
 
 
+{-| Tetromino mit Formbezeichnung und Blockmatrix.
+ -}
 type alias Tetromino = { type_ : Type , blocks : List { row : Int , col : Int } }
+
+
+{-| Formbezeichnungen für Tetrominos.
+-}
 type Type = I | J | L | O | S | T | Z
 
 
+{-| Tetromino in I-Form.
+-}
 i : Tetromino
 i = { type_ = I , blocks = fromTuples [ (2,0) , (2,1) , (2,2) , (2,3) ] }
 
 
+{-| Tetromino in J-Form.
+-}
 j : Tetromino
 j = { type_ = J , blocks = fromTuples [ (1,0) , (1,1) , (1,2) , (2,2) ] }
 
 
+{-| Tetromino in L-Form.
+-}
 l : Tetromino
 l = { type_ = L , blocks = fromTuples [ (1,0) , (1,1) , (1,2) , (2,0) ] }
 
 
+{-| Tetromino in O-Form.
+-}
 o : Tetromino
 o = { type_ = O , blocks = fromTuples [ (0,0) , (0,1) , (1,0) , (1,1) ] }
 
 
+{-| Tetromino in S-Form.
+-}
 s : Tetromino
 s = { type_ = S , blocks = fromTuples [ (0,1) , (0,2) , (1,0) , (1,1) ] }
 
 
+{-| Tetromino in T-Form.
+-}
 t : Tetromino
 t = { type_ = T , blocks = fromTuples [ (1,0) , (1,1) , (1,2) , (2,1) ] }
 
 
+{-| Tetromino in Z-Form.
+-}
 z : Tetromino
 z = { type_ = Z , blocks = fromTuples [ (1,0) , (1,1) , (2,1) , (2,2) ] }
 
 
+{-| Erzeuge einen Tetromino.
+-}
 new : Type -> Tetromino
 new type_ = case type_ of
     I -> i
@@ -59,6 +81,8 @@ new type_ = case type_ of
     Z -> z
 
 
+{-| Rotiere einen Tetromino im Uhrzeigersinn.
+-}
 rotate : Tetromino -> Tetromino
 rotate tmino = case tmino.type_ of
     I ->
@@ -103,6 +127,8 @@ rotate tmino = case tmino.type_ of
         else { tmino | blocks = fromTuples [ (1,0) , (1,1) , (2,1) , (2,2) ] }
 
 
+{-| Erzeuge einen (pseudo)zufällig gewählten Tetromino.
+-}
 random : Random.Generator Type
 random = Random.int 0 6 |> Random.map
     ( \ n -> case n of
@@ -120,5 +146,7 @@ random = Random.int 0 6 |> Random.map
 -- Helpers
 
 
+{-| Übersetze eine List von Koordinatenpaaren in eine Liste von Koordinaten-Records.
+-}
 fromTuples : List ( Int , Int ) -> List { row : Int , col : Int }
 fromTuples pairs = List.map ( \ ( row , col ) -> { row = row , col = col } ) pairs

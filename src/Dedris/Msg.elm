@@ -6,6 +6,8 @@ import Keyboard.Event exposing ( KeyboardEvent )
 import Time
 
 
+{-| Interne Nachrichten.
+-}
 type Msg
     = ActiveMotion Motion
     | KeyDown KeyboardEvent

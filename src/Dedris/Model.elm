@@ -5,6 +5,8 @@ import Dedris.Tower as Tower exposing ( Tower )
 import Dedris.Motion as Motion exposing ( Motion )
 
 
+{-| Datenmodell.
+-}
 type alias Model =
     { tower : Tower
     , tmino : Tetromino

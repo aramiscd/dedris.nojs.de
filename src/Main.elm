@@ -17,6 +17,8 @@ import Task
 import Time
 
 
+{-| Hauptprogramm.
+-}
 main : Program () Model Msg
 main = Browser.document
     { init = init
@@ -26,6 +28,8 @@ main = Browser.document
     }
 
 
+{-| Initialer Wert des Datenmodells.
+-}
 init : () -> ( Model , Cmd Msg )
 init () =
     ( { tower = Tower.new
@@ -47,6 +51,8 @@ init () =
     )
 
 
+{-| Warte und reagiere auf externe Ereignisse.
+-}
 subscriptions : Model -> Sub Msg
 subscriptions mdl = Sub.batch
     [ Browser.Events.onKeyDown ( Json.Decode.map Msg.KeyDown decodeKeyboardEvent )
@@ -63,6 +69,8 @@ subscriptions mdl = Sub.batch
     ]
 
 
+{-| Reagiere auf interne Nachrichten.
+-}
 update : Msg -> Model -> ( Model , Cmd Msg )
 update msg mdl =
     if mdl.pause
@@ -107,5 +115,7 @@ update msg mdl =
 -- Helpers
 
 
+{-| Extrahiere die relevanten Daten aus einem `Browser.Dom.Viewport`.
+-}
 viewportShim : Browser.Dom.Viewport -> { height : Int , width : Int }
 viewportShim vp = { height = floor vp.viewport.height , width = floor vp.viewport.width }

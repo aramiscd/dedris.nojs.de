@@ -19,6 +19,8 @@ import Dedris.Tower as Tower
 import Random
 
 
+{-| Bewege Tetromino im Spielturm um eine Position nach unten oder lege ihn ab und hole den nächsten.
+-}
 moveDown : Model -> ( Model , Cmd Msg )
 moveDown mdl =
     if canMoveDown mdl
@@ -26,14 +28,20 @@ moveDown mdl =
     else ( tminoDone mdl , Random.generate Msg.NewTmino Tmino.random )
 
 
+{-| Bewege Tetromino im Spielturm nach links.
+-}
 moveLeft : Model -> ( Model , Cmd Msg )
 moveLeft mdl = move { row = mdl.anchor.row , col = mdl.anchor.col - 1 } mdl.tmino mdl
 
 
+{-| Bewege Tetromino im Spielturm nach rechts.
+-}
 moveRight : Model -> ( Model , Cmd Msg )
 moveRight mdl = move { row = mdl.anchor.row , col = mdl.anchor.col + 1 } mdl.tmino mdl
 
 
+{-| Bewege Tetromino wenn möglich im Spielturm an eine andere Position.
+-}
 move : { row : Int , col : Int } -> Tetromino -> Model -> ( Model , Cmd Msg )
 move anchor tmino mdl =
     if Tower.fits anchor mdl.tower tmino && not mdl.gameOver
@@ -41,6 +49,8 @@ move anchor tmino mdl =
     else ( mdl , Cmd.none )
 
 
+{-| Rotiere Tetromino im Spielturm im Uhrzeigersinn.
+-}
 rotateRight : Model -> ( Model , Cmd Msg )
 rotateRight mdl =
     let
@@ -57,6 +67,8 @@ rotateRight mdl =
         else move anchor4 tmino mdl
 
 
+{-| Rotiere Tetromino im Spielturm gegen den Uhrzeigersinn.
+-}
 rotateLeft : Model -> ( Model , Cmd Msg )
 rotateLeft mdl = case mdl.tmino.type_ of
     Tmino.I -> rotateRight mdl
@@ -68,6 +80,8 @@ rotateLeft mdl = case mdl.tmino.type_ of
     Tmino.Z -> rotateRight mdl
 
 
+{-| Hole neuen Tetromino ins Spiel oder beende das laufende Spiel.
+-}
 newTmino : Tmino.Type -> Model -> ( Model , Cmd Msg )
 newTmino type_ mdl =
     if Tower.fits initialAnchor mdl.tower mdl.next
@@ -84,6 +98,8 @@ newTmino type_ mdl =
         ( { mdl | gameOver = True } , Cmd.none )
 
 
+{-| Beginne ein neues Spiel.
+-}
 reload : Model -> ( Model , Cmd Msg )
 reload mdl =
     ( { tower = Tower.new
@@ -101,14 +117,20 @@ reload mdl =
     )
 
 
+{-| Wechsle zwischen Pause und laufendem Spiel.
+-}
 togglePause : Model -> ( Model , Cmd Msg )
 togglePause mdl = ( { mdl | pause = not mdl.pause } , Cmd.none )
 
 
+{-| Speichere die Höhe und Breite der Anzeige.
+-}
 viewport : { height : Int , width : Int } -> Model -> ( Model , Cmd Msg )
 viewport vp mdl = ( { mdl | viewport = vp } , Cmd.none )
 
 
+{-| Lege fest, welche Bewegung gerade aktiv ist.
+-}
 activeMotion : Motion -> Model -> ( Model , Cmd Msg )
 activeMotion motion mdl = case motion of
     Motion.None -> ( { mdl | activeMotion = Motion.None } , Cmd.none )
@@ -123,10 +145,14 @@ activeMotion motion mdl = case motion of
 -- Helpers
 
 
+{-| Prüfe, ob der Tetromino sich im Spielfeld um eine Position nach unten bewegen kann.
+-}
 canMoveDown : Model -> Bool
 canMoveDown mdl = Tower.fits { row = mdl.anchor.row + 1 , col = mdl.anchor.col } mdl.tower mdl.tmino
 
 
+{-| Lege die Blöcke des aktiven Tetromino auf den Blockstapel und hole einen neuen Tetromino ins Spiel.
+-}
 tminoDone : Model -> Model
 tminoDone mdl =
     let
@@ -136,5 +162,7 @@ tminoDone mdl =
         { mdl | tower = newTower , score = mdl.score + score }
 
 
+{-| Die Startposition für neu ins Spiel geholte Tetrominos.
+-}
 initialAnchor : { row : Int , col : Int }
 initialAnchor = { row = 0 , col = 3 }

@@ -12,6 +12,8 @@ import Dedris.Tower as Tower exposing ( Tower )
 import Html as ElmHtml exposing ( Html )
 
 
+{-| View für die gesamte Anwendung.
+-}
 app : Model -> Browser.Document Msg
 app mdl =
     { title = "Dedris"
@@ -26,16 +28,22 @@ app mdl =
     }
 
 
+{-| View für den Spielstand.
+-}
 msgScore : Int -> Html Msg
 msgScore score = Html.div { css | marginRight = Css.Px 10 , marginTop = Css.Px 5 } []
     [ Html.text ( "Score " ++ String.fromInt score ) ]
 
 
+{-| View für Pausenmeldung.
+-}
 msgPause : Bool -> Html Msg
 msgPause pause = Html.div { css | marginLeft = Css.Px 10 , marginTop = Css.Px 5 } []
     [ Html.text ( if pause then "Pause" else "" ) ]
 
 
+{-| View für die "Game over"-Meldung
+-}
 msgGameOver : Html Msg
 msgGameOver = Html.div
     { css
@@ -44,6 +52,10 @@ msgGameOver = Html.div
     } [] [ Html.text "Game over!" ]
 
 
+{-| View für den Tetromino, der als nächstes ins Spiel geholt wird.
+Wird gerade nicht verwendet, weil dafür in der mobilen Ansicht kein Platz ist.
+TODO: Zeige das an, wenn dafür Platz ist.
+-}
 next : Tetromino -> Html Msg
 next tmino =
     let
@@ -58,6 +70,8 @@ next tmino =
             |> Html.div { css | flexDirection = Css.FdColumn , marginTop = Css.Px 30 } []
 
 
+{-| View für den Spielturm.
+-}
 tower : Model -> Html Msg
 tower mdl = List.range 0 19 |> List.map
     ( \ row -> List.range 0 9 |> List.map
@@ -80,6 +94,8 @@ tower mdl = List.range 0 19 |> List.map
        )
 
 
+{-| View für eine Position im Spielturm.
+-}
 block : Int -> Maybe Tmino.Type -> Html Msg
 block size tmino = Html.div
     { css
@@ -99,6 +115,8 @@ block size tmino = Html.div
         []
 
 
+{-| View für einen Block in der Vorschau für den nächsten Tetromino.
+-}
 blockPreview : Maybe Tmino.Type -> Html Msg
 blockPreview tmino = Html.div
     { css
@@ -118,10 +136,14 @@ blockPreview tmino = Html.div
         []
 
 
+{-| Größe eines Bausteins.
+-}
 blockSize : Model -> Int
 blockSize mdl =  min ( mdl.viewport.width // Tower.width ) ( mdl.viewport.height // Tower.height )
 
 
+{-| Schriftgröße in Abhängigkeit von der Größe eines Bausteins.
+-}
 fontSize : Model -> Css.FontSize
 fontSize mdl =
     if blockSize mdl < 15
@@ -135,6 +157,8 @@ fontSize mdl =
     else Css.FsXXXLarge
 
 
+{-| Transparente Oberfläche für Touch-Bedienung auf mobilen Endgeräten.
+-}
 touchOverlay : Model -> Html Msg
 touchOverlay mdl = Html.div
     { css | position = Css.PAbsolute , flexDirection = Css.FdColumn , width = Css.Px mdl.viewport.width
@@ -171,6 +195,8 @@ touchOverlay mdl = Html.div
     )
 
 
+{-| Button für den Neustart des Spiels.
+-}
 btnRestart : Html Msg
 btnRestart = Html.div
     { css
