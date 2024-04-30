@@ -15,3 +15,4 @@ Es gibt in meiner Variante keine Level aber das Spiel beschleunigt mit der Zeit.
 - Wenn man nach dem Spielende ein weiteres Spiel beginnt, ist das erste Tetromino des neuen Spiels das letzte des alten Spiels.  Das war so nicht von mir beabsichtigt.
 - Ein Verweis au den Source Code könnte auch noch irgendwo untergebracht werden.
 - Touch-UI benötigt mindestens ein paar Hinweise zur Bedienung.  Es scheint, so wie es jetzt ist, ohne Erklärung nicht spielbar zu sein.
+- Performance verbessern, z.B. Subscriptions verringern

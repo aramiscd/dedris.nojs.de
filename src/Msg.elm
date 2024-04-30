@@ -1,20 +1,17 @@
-module Dedris.Msg exposing ( Msg (..) )
+module Msg exposing ( Msg (..) )
 
-import Dedris.Tetromino as Tmino exposing ( Tetromino )
-import Dedris.Motion as Motion exposing ( Motion )
+import Dedris.Motion exposing ( Motion )
+import Dedris.Tetromino as Tetromino
 import Keyboard.Event exposing ( KeyboardEvent )
-import Time
 
 
-{-| Interne Nachrichten.
--}
 type Msg
     = ActiveMotion Motion
     | KeyDown KeyboardEvent
     | MoveDown
     | MoveLeft
     | MoveRight
-    | NewTmino Tmino.Type
+    | NewTmino Tetromino.Type
     | Reload
     | RotateLeft
     | RotateRight

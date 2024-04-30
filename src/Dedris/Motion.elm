@@ -1,12 +1,10 @@
 module Dedris.Motion exposing ( Motion (..) )
 
 
-{-| Bewegungen.
--}
 type Motion
     = None
+    | MoveDown
     | MoveLeft
     | MoveRight
-    | MoveDown
     | RotateLeft
     | RotateRight
