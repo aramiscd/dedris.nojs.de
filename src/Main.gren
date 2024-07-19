@@ -9,7 +9,8 @@ import Update exposing ( update )
 import View
 
 
-main : Program () Model Msg
+-- Hauptprogramm
+main : Program {} Model Msg
 main =
     Browser.document
         { init = init

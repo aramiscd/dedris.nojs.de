@@ -5,6 +5,7 @@ import Dedris.Tetromino as Tetromino
 import Keyboard.Event exposing ( KeyboardEvent )
 
 
+-- Interne Benachrichtigungen
 type Msg
     = ActiveMotion Motion
     | KeyDown KeyboardEvent

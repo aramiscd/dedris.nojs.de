@@ -5,23 +5,26 @@ module Cmd exposing
 
 import Browser.Dom
 import Dedris.Tetromino as Tetromino
+import Math
 import Msg exposing ( Msg )
 import Random
 import Task
 
 
+-- Wähle zufällig einen neuen Tetromino
 generateNewTetromino : Cmd Msg
 generateNewTetromino =
     Random.generate Msg.NewTmino Tetromino.random
 
 
+-- Ermittle die aktuelle Höhe und Breite der Ansicht
 getViewport : Cmd Msg
 getViewport =
     Task.perform
         ( \ vp ->
             Msg.Viewport
-                { height = floor vp.viewport.height
-                , width = floor vp.viewport.width
+                { height = Math.floor vp.viewport.height
+                , width = Math.floor vp.viewport.width
                 }
         )
         Browser.Dom.getViewport

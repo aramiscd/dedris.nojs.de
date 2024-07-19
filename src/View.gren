@@ -1,7 +1,7 @@
 module View exposing ( app )
 
 import Ari.Css as Css exposing ( css )
-import Ari.Events exposing ( onClick , onTouchStart , onTouchEnd )
+import Ari.Events exposing ( onClick {- , onTouchStart , onTouchEnd -} ) -- todo
 import Ari.Html as Html
 import Browser
 import Dedris.Motion as Motion exposing ( Motion )
@@ -85,17 +85,17 @@ msgGameOver = Html.div
 -- Tetromino, der als nächstes ins Spiel geholt wird
 --
 -- Wird gerade nicht verwendet, weil dafür in der mobilen Ansicht kein Platz ist
--- TODO: Zeige das an, wenn dafür Platz ist
+-- todo: Zeige das an, wenn dafür Platz ist
 next : Tetromino -> Html Msg
 next tmino =
     let
         t = Tower.set { row = 0 , col = 0 } tmino Tower.new
     in
-        List.range 0 3
-            |> List.map
+        Array.range 0 3
+            |> Array.map
                 ( \ row ->
-                    List.range 0 3
-                        |> List.map
+                    Array.range 0 3
+                        |> Array.map
                             ( \ col ->
                                 t
                                     |> Tower.get { row = row , col = col }
@@ -115,10 +115,10 @@ next tmino =
 -- Spielturm
 tower : Model -> Html Msg
 tower mdl =
-    List.range 0 19
-        |> List.map
-            ( \ row -> List.range 0 9
-                |> List.map
+    Array.range 0 19
+        |> Array.map
+            ( \ row -> Array.range 0 9
+                |> Array.map
                     ( \ col ->
                         mdl.tower
                             |> Tower.set mdl.anchor mdl.tmino
@@ -260,8 +260,8 @@ touchOverlay mdl =
                                 | width = Css.Px ( mdl.viewport.width // 2 )
                                 , height = Css.Px ( mdl.viewport.height // 2 )
                             }
-                            [ onTouchStart ( Msg.ActiveMotion Motion.RotateLeft )
-                            , onTouchEnd ( Msg.ActiveMotion Motion.None )
+                            [ -- onTouchStart ( Msg.ActiveMotion Motion.RotateLeft )
+                         -- , onTouchEnd ( Msg.ActiveMotion Motion.None )
                             ]
                             [
                             ]
@@ -270,8 +270,8 @@ touchOverlay mdl =
                                 | width = Css.Px ( mdl.viewport.width // 2 )
                                 , height = Css.Px ( mdl.viewport.height // 2 )
                                 }
-                            [ onTouchStart ( Msg.ActiveMotion Motion.RotateRight )
-                            , onTouchEnd ( Msg.ActiveMotion Motion.None )
+                            [ -- onTouchStart ( Msg.ActiveMotion Motion.RotateRight )
+                         -- , onTouchEnd ( Msg.ActiveMotion Motion.None )
                             ]
                             [
                             ]
@@ -285,8 +285,8 @@ touchOverlay mdl =
                                 | width = Css.Px ( mdl.viewport.width // 2 )
                                 , height = Css.Px ( mdl.viewport.height // 3 )
                             }
-                            [ onTouchStart ( Msg.ActiveMotion Motion.MoveLeft )
-                            , onTouchEnd ( Msg.ActiveMotion Motion.None )
+                            [ -- onTouchStart ( Msg.ActiveMotion Motion.MoveLeft )
+                         -- , onTouchEnd ( Msg.ActiveMotion Motion.None )
                             ]
                             [
                             ]
@@ -295,8 +295,8 @@ touchOverlay mdl =
                                 | width = Css.Px ( mdl.viewport.width // 2 )
                                 , height = Css.Px ( mdl.viewport.height // 3 )
                             }
-                            [ onTouchStart ( Msg.ActiveMotion Motion.MoveRight )
-                            , onTouchEnd ( Msg.ActiveMotion Motion.None )
+                            [ -- onTouchStart ( Msg.ActiveMotion Motion.MoveRight )
+                         -- , onTouchEnd ( Msg.ActiveMotion Motion.None )
                             ]
                             [
                             ]
@@ -306,8 +306,8 @@ touchOverlay mdl =
                         | width = Css.Px mdl.viewport.width
                         , height = Css.Px ( mdl.viewport.height // 6 )
                     }
-                    [ onTouchStart ( Msg.ActiveMotion Motion.MoveDown )
-                    , onTouchEnd ( Msg.ActiveMotion Motion.None )
+                    [ -- onTouchStart ( Msg.ActiveMotion Motion.MoveDown )
+                 -- , onTouchEnd ( Msg.ActiveMotion Motion.None )
                     ]
                     [
                     ]

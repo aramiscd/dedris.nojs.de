@@ -1,8 +1,0 @@
-{
-    "git-dependencies": {
-        "direct": {
-            "https://git.sr.ht/~aramis/elm-ari": "0.6.0"
-        },
-        "indirect": {}
-    }
-}

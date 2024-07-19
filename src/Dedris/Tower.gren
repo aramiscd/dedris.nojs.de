@@ -9,7 +9,6 @@ module Dedris.Tower exposing
     , width
     )
 
-import Array exposing ( Array )
 import Dedris.Tetromino as Tmino exposing ( Tetromino )
 
 
@@ -28,12 +27,7 @@ width = 10
 
 -- Erzeuge einen neuen Spielturm
 new : Tower
-new =
-    Tower
-        ( Array.initialize
-            height
-            ( \ _ -> Array.initialize width ( \ _ -> Nothing ) )
-        )
+new = Tower ( Array.repeat height ( Array.repeat width Nothing ) )
 
 
 -- Die Belegung einer Position im Spielturm
@@ -50,7 +44,7 @@ get { row , col } tower =
 set : { row : Int , col : Int } -> Tetromino -> Tower -> Tower
 set anchor tmino tower =
     tmino.blocks
-        |> List.foldr
+        |> Array.foldr
             ( \ block ->
                 setBlock
                     { row = anchor.row + block.row
@@ -65,9 +59,9 @@ set anchor tmino tower =
 fits : { row : Int, col : Int } -> Tower -> Tetromino -> Bool
 fits anchor tower tmino =
     tmino.blocks
-        |> List.all
+        |> Array.all
             ( \ block ->
-                List.all
+                Array.all
                     ( (==) True )
                     [ anchor.row + block.row >= 0
                     , anchor.row + block.row < height
@@ -85,18 +79,23 @@ fits anchor tower tmino =
 
 -- Entferne volle Zeilen aus dem Spielturm und rücke darüberliegende Zeilen
 -- nach unten nach
-shrink : Tower -> ( Tower , Int )
+shrink : Tower ->
+    { tower : Tower -- der veränderte Spielturm
+    , eliminated : Int -- ide Zahl der eliminierten Zeilen
+    }
 shrink tower =
     let
         remaining = unpack tower |> Array.filter ( any ( (==) Nothing ) )
         eliminated = height - Array.length remaining
         newRows = Array.repeat eliminated ( Array.repeat width Nothing )
     in
-        ( Tower ( Array.append newRows remaining ) , eliminated )
+        { tower = Tower ( Array.append remaining newRows )
+        , eliminated = eliminated
+        }
 
 
 
--- Helpers
+-- Hilfsfunktionen
 
 
 -- Lege die Belegung einer Position im Spielturm fest

@@ -8,6 +8,7 @@ import Dedris.Tetromino as Tetromino exposing ( Tetromino )
 import Dedris.Tower as Tower exposing ( Tower )
 
 
+-- Datenmodell
 type alias Model =
     { activeMotion : Motion
     , anchor : { row : Int , col : Int }
@@ -22,6 +23,7 @@ type alias Model =
     }
 
 
+-- Startwert für das Datenmodell
 init : Model
 init =
     { tower = Tower.new
