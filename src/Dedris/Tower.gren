@@ -35,7 +35,7 @@ get : { row : Int , col : Int } -> Tower -> Maybe Tmino.Type
 get { row , col } tower =
     unpack tower
     |> Array.get row
-    |> Maybe.withDefault Array.empty
+    |> Maybe.withDefault []
     |> Array.get col
     |> Maybe.withDefault Nothing
 
@@ -85,7 +85,7 @@ shrink : Tower ->
     }
 shrink tower =
     let
-        remaining = unpack tower |> Array.filter ( any ( (==) Nothing ) )
+        remaining = unpack tower |> Array.keepIf ( any ( (==) Nothing ) )
         eliminated = height - Array.length remaining
         newRows = Array.repeat eliminated ( Array.repeat width Nothing )
     in
@@ -103,7 +103,7 @@ setBlock : { row : Int , col : Int } -> Tmino.Type -> Tower -> Tower
 setBlock { row , col } tmino tower =
     unpack tower
     |> Array.get row
-    |> Maybe.withDefault Array.empty
+    |> Maybe.withDefault []
     |> Array.set col ( Just tmino )
     |> ( \ r -> Array.set row r ( unpack tower ) )
     |> Tower
@@ -117,11 +117,11 @@ unpack ( Tower t ) = t
 -- Prüfe, ob alle Elemente in einem Array eine bestimmte Bedingung erfüllen
 all : ( a -> Bool ) -> Array a -> Bool
 all pred elems =
-    Array.filter ( pred >> not ) elems == Array.empty
+    Array.keepIf ( pred >> not ) elems == []
 
 
 -- Prüfe, ob mindestens ein Element in einem Array eine bestimmte
 -- Bedingung erfüllt
 any : ( a -> Bool ) -> Array a -> Bool
 any pred elems =
-    Array.filter pred elems /= Array.empty
+    Array.keepIf pred elems /= []

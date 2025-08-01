@@ -129,7 +129,7 @@ block size tmino =
         { css
             | width = Css.Px size
             , height = Css.Px size
-            , bgColor = case tmino of
+            , bgColor = when tmino is
                 Nothing -> "inherit"
                 Just Tmino.I -> "#00b8d4"
                 Just Tmino.J -> "#2962ff"
@@ -151,7 +151,7 @@ blockPreview tmino =
             | width = Css.Px 35
             , height = Css.Px 35
             , bgColor =
-                case tmino of
+                when tmino is
                     Nothing -> "inherit"
                     Just Tmino.I -> "#00b8d4"
                     Just Tmino.J -> "#2962ff"

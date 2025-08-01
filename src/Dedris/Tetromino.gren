@@ -122,7 +122,7 @@ z =
 -- Erzeuge einen Tetromino
 new : Type -> Tetromino
 new type_ =
-    case type_ of
+    when type_ is
         I -> i
         J -> j
         L -> l
@@ -135,7 +135,7 @@ new type_ =
 -- Rotiere einen Tetromino im Uhrzeigersinn
 rotate : Tetromino -> Tetromino
 rotate tmino =
-    case tmino.type_ of
+    when tmino.type_ is
         I ->
             if
                 Array.member { row = 0 , col = 1 } tmino.blocks
@@ -342,7 +342,7 @@ random =
     Random.int 0 6
     |> Random.map
         ( \ n ->
-            case n of
+            when n is
                 0 -> I
                 1 -> J
                 2 -> L

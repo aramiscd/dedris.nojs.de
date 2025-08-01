@@ -14,11 +14,11 @@ update : Msg -> Model -> { model : Model , command : Cmd Msg }
 update msg mdl =
     if mdl.pause
     then
-        case msg of
+        when msg is
             Msg.KeyDown _ -> togglePause mdl
             _ -> { model = mdl , command = Cmd.none }
     else
-        case msg of
+        when msg is
             Msg.ActiveMotion motion -> activeMotion motion mdl
             Msg.MoveDown -> moveDown mdl
             Msg.MoveLeft -> moveLeft mdl
@@ -96,7 +96,7 @@ rotateRight mdl =
 -- Rotiere Tetromino im Spielturm gegen den Uhrzeigersinn
 rotateLeft : Model -> { model : Model, command : Cmd Msg }
 rotateLeft mdl =
-    case mdl.tmino.type_ of
+    when mdl.tmino.type_ is
         Tmino.I -> rotateRight mdl
         Tmino.J -> rotateRight { mdl | tmino = Tmino.rotate ( Tmino.rotate mdl.tmino ) }
         Tmino.L -> rotateRight { mdl | tmino = Tmino.rotate ( Tmino.rotate mdl.tmino ) }
@@ -164,7 +164,7 @@ viewport vp mdl =
 -- Lege fest, welche Bewegung gerade aktiv ist
 activeMotion : Motion -> Model -> { model : Model, command : Cmd Msg }
 activeMotion motion mdl =
-    case motion of
+    when motion is
         Motion.None -> { model = { mdl | activeMotion = Motion.None } , command = Cmd.none }
         Motion.MoveLeft -> moveLeft { mdl | activeMotion = Motion.MoveLeft }
         Motion.MoveRight -> moveRight { mdl | activeMotion = Motion.MoveRight }
