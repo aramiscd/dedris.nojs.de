@@ -340,14 +340,14 @@ rotate tmino =
 random : Random.Generator Type
 random =
     Random.int 0 6
-        |> Random.map
-            ( \ n ->
-                case n of
-                    0 -> I
-                    1 -> J
-                    2 -> L
-                    3 -> O
-                    4 -> S
-                    5 -> T
-                    _ -> Z
-            )
+    |> Random.map
+        ( \ n ->
+            case n of
+                0 -> I
+                1 -> J
+                2 -> L
+                3 -> O
+                4 -> S
+                5 -> T
+                _ -> Z
+        )

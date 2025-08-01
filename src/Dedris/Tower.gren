@@ -34,47 +34,47 @@ new = Tower ( Array.repeat height ( Array.repeat width Nothing ) )
 get : { row : Int , col : Int } -> Tower -> Maybe Tmino.Type
 get { row , col } tower =
     unpack tower
-        |> Array.get row
-        |> Maybe.withDefault Array.empty
-        |> Array.get col
-        |> Maybe.withDefault Nothing
+    |> Array.get row
+    |> Maybe.withDefault Array.empty
+    |> Array.get col
+    |> Maybe.withDefault Nothing
 
 
 -- Lege den aktiven Tetromino und seine Position im Spielturm fest
 set : { row : Int , col : Int } -> Tetromino -> Tower -> Tower
 set anchor tmino tower =
     tmino.blocks
-        |> Array.foldr
-            ( \ block ->
-                setBlock
-                    { row = anchor.row + block.row
-                    , col = anchor.col + block.col
-                    }
-                    tmino.type_
-            )
-            tower
+    |> Array.foldr
+        ( \ block ->
+            setBlock
+                { row = anchor.row + block.row
+                , col = anchor.col + block.col
+                }
+                tmino.type_
+        )
+        tower
 
 
 -- Prüfe, ob ein Tetromino an einer bestimmten Position in den Spielturm passt
 fits : { row : Int, col : Int } -> Tower -> Tetromino -> Bool
 fits anchor tower tmino =
     tmino.blocks
-        |> Array.all
-            ( \ block ->
-                Array.all
-                    ( (==) True )
-                    [ anchor.row + block.row >= 0
-                    , anchor.row + block.row < height
-                    , anchor.col + block.col >= 0
-                    , anchor.col + block.col < width
-                    , get
-                        { row = anchor.row + block.row
-                        , col = anchor.col + block.col
-                        }
-                        tower
-                        == Nothing
-                    ]
-            )
+    |> Array.all
+        ( \ block ->
+            Array.all
+                ( (==) True )
+                [ anchor.row + block.row >= 0
+                , anchor.row + block.row < height
+                , anchor.col + block.col >= 0
+                , anchor.col + block.col < width
+                , get
+                    { row = anchor.row + block.row
+                    , col = anchor.col + block.col
+                    }
+                    tower
+                    == Nothing
+                ]
+        )
 
 
 -- Entferne volle Zeilen aus dem Spielturm und rücke darüberliegende Zeilen
@@ -102,11 +102,11 @@ shrink tower =
 setBlock : { row : Int , col : Int } -> Tmino.Type -> Tower -> Tower
 setBlock { row , col } tmino tower =
     unpack tower
-        |> Array.get row
-        |> Maybe.withDefault Array.empty
-        |> Array.set col ( Just tmino )
-        |> ( \ r -> Array.set row r ( unpack tower ) )
-        |> Tower
+    |> Array.get row
+    |> Maybe.withDefault Array.empty
+    |> Array.set col ( Just tmino )
+    |> ( \ r -> Array.set row r ( unpack tower ) )
+    |> Tower
 
 
 -- Verwirf den `Tower` Datenkonstruktor

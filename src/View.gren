@@ -26,11 +26,8 @@ app mdl =
                 , fontFamily = "monospace"
                 , userSelect = Css.UsNone
             }
-            [
-            ]
-            [ tower mdl
-            , touchOverlay mdl
-            ]
+            []
+            [ tower mdl, touchOverlay mdl ]
         ]
     }
 
@@ -39,28 +36,18 @@ app mdl =
 msgScore : Int -> Html Msg
 msgScore score =
     Html.div
-        { css
-            | marginRight = Css.Px 10
-            , marginTop = Css.Px 5
-        }
-        [
-        ]
-        [ Html.text ( "Score " ++ String.fromInt score )
-        ]
+        { css | marginRight = Css.Px 10, marginTop = Css.Px 5 }
+        []
+        [ Html.text ( "Score " ++ String.fromInt score ) ]
 
 
 -- Pausenmeldung
 msgPause : Bool -> Html Msg
 msgPause pause =
     Html.div
-        { css
-            | marginLeft = Css.Px 10
-            , marginTop = Css.Px 5
-            }
-            [
-            ]
-            [ Html.text ( if pause then "Pause" else "" )
-            ]
+        { css | marginLeft = Css.Px 10, marginTop = Css.Px 5 }
+        []
+        [ Html.text ( if pause then "Pause" else "" ) ]
 
 
 -- "Game over"-Meldung
@@ -76,10 +63,8 @@ msgGameOver = Html.div
         , paddingRight = Css.Px 40
         , paddingTop = Css.Px 20
     }
-    [
-    ]
-    [ Html.text "Game over!"
-    ]
+    []
+    [ Html.text "Game over!" ]
 
 
 -- Tetromino, der als nächstes ins Spiel geholt wird
@@ -92,75 +77,49 @@ next tmino =
         t = Tower.set { row = 0 , col = 0 } tmino Tower.new
     in
         Array.range 0 3
-            |> Array.map
-                ( \ row ->
-                    Array.range 0 3
-                        |> Array.map
-                            ( \ col ->
-                                t
-                                    |> Tower.get { row = row , col = col }
-                                    |> blockPreview
-                            )
-                        |> Html.div css []
-                )
-            |> Html.div
-                { css
-                    | flexDirection = Css.FdColumn
-                    , marginTop = Css.Px 30
-                    }
-                    [
-                    ]
+        |> Array.map
+            ( \ row ->
+                Array.range 0 3
+                |> Array.map ( \ col -> t |> Tower.get { row = row , col = col } |> blockPreview )
+                |> Html.div css []
+            )
+        |> Html.div { css | flexDirection = Css.FdColumn, marginTop = Css.Px 30 } []
 
 
 -- Spielturm
 tower : Model -> Html Msg
 tower mdl =
     Array.range 0 19
-        |> Array.map
-            ( \ row -> Array.range 0 9
-                |> Array.map
-                    ( \ col ->
-                        mdl.tower
-                            |> Tower.set mdl.anchor mdl.tmino
-                            |> Tower.get { row = row , col = col }
-                            |> block ( blockSize mdl )
-                    ) |> Html.div css []
-            )
-        |> ( \ blocks ->
-                Html.div
+    |> Array.map
+        ( \ row ->
+            Array.range 0 9
+            |> Array.map
+                ( \ col ->
+                    mdl.tower
+                    |> Tower.set mdl.anchor mdl.tmino
+                    |> Tower.get { row = row , col = col }
+                    |> block ( blockSize mdl )
+                )
+                |> Html.div css []
+        )
+    |> ( \ blocks ->
+            Html.div
+                { css | bgColor = "#424242" }
+                []
+                [ Html.div css [] [ Html.div { css | flexDirection = Css.FdColumn } [] blocks ]
+                , Html.div
                     { css
-                        | bgColor = "#424242"
+                        | position = Css.PAbsolute
+                        , width = Css.Px ( Tower.width * blockSize mdl )
+                        , bgColor = "transparent"
+                        , color = "white"
+                        , justifyContent = Css.JcSpaceBetween
+                        , fontSize = fontSize mdl
                     }
-                    [
-                    ]
-                    [ Html.div
-                        css
-                        [
-                        ]
-                        [ Html.div
-                            { css
-                                | flexDirection = Css.FdColumn
-                            }
-                            [
-                            ]
-                            blocks
-                        ]
-                    , Html.div
-                        { css
-                            | position = Css.PAbsolute
-                            , width = Css.Px ( Tower.width * blockSize mdl )
-                            , bgColor = "transparent"
-                            , color = "white"
-                            , justifyContent = Css.JcSpaceBetween
-                            , fontSize = fontSize mdl
-                        }
-                        [
-                        ]
-                        [ msgPause mdl.pause
-                        , msgScore mdl.score
-                        ]
-                    ]
-           )
+                    []
+                    [ msgPause mdl.pause, msgScore mdl.score ]
+                ]
+       )
 
 
 -- Position im Spielturm
@@ -180,10 +139,8 @@ block size tmino =
                 Just Tmino.T -> "#aa00ff"
                 Just Tmino.Z -> "#d50000"
             }
-            [
-            ]
-            [
-            ]
+            []
+            []
 
 
 -- Block in der Vorschau für den nächsten Tetromino
@@ -204,10 +161,8 @@ blockPreview tmino =
                     Just Tmino.T -> "#aa00ff"
                     Just Tmino.Z -> "#d50000"
             }
-            [
-            ]
-            [
-            ]
+            []
+            []
 
 
 -- Größe eines Bausteins
@@ -245,8 +200,7 @@ touchOverlay mdl =
             , alignItems = Css.AiCenter
             , bgColor = if mdl.gameOver then "rgb(0,0,0,0.7)" else "transparent"
         }
-        [
-        ]
+        []
         ( if mdl.gameOver
             then
                 [ msgGameOver , btnRestart ]
@@ -260,57 +214,41 @@ touchOverlay mdl =
                                 | width = Css.Px ( mdl.viewport.width // 2 )
                                 , height = Css.Px ( mdl.viewport.height // 2 )
                             }
-                            [ -- onTouchStart ( Msg.ActiveMotion Motion.RotateLeft )
-                         -- , onTouchEnd ( Msg.ActiveMotion Motion.None )
-                            ]
-                            [
-                            ]
+                            []
+                            []
                         , Html.div
                             { css
                                 | width = Css.Px ( mdl.viewport.width // 2 )
                                 , height = Css.Px ( mdl.viewport.height // 2 )
                                 }
-                            [ -- onTouchStart ( Msg.ActiveMotion Motion.RotateRight )
-                         -- , onTouchEnd ( Msg.ActiveMotion Motion.None )
-                            ]
-                            [
-                            ]
+                            []
+                            []
                         ]
                 , Html.div
                     css
-                        [
-                        ]
+                        []
                         [ Html.div
                             { css
                                 | width = Css.Px ( mdl.viewport.width // 2 )
                                 , height = Css.Px ( mdl.viewport.height // 3 )
                             }
-                            [ -- onTouchStart ( Msg.ActiveMotion Motion.MoveLeft )
-                         -- , onTouchEnd ( Msg.ActiveMotion Motion.None )
-                            ]
-                            [
-                            ]
+                            []
+                            []
                         , Html.div
                             { css
                                 | width = Css.Px ( mdl.viewport.width // 2 )
                                 , height = Css.Px ( mdl.viewport.height // 3 )
                             }
-                            [ -- onTouchStart ( Msg.ActiveMotion Motion.MoveRight )
-                         -- , onTouchEnd ( Msg.ActiveMotion Motion.None )
-                            ]
-                            [
-                            ]
+                            []
+                            []
                         ]
                 , Html.div
                     { css
                         | width = Css.Px mdl.viewport.width
                         , height = Css.Px ( mdl.viewport.height // 6 )
                     }
-                    [ -- onTouchStart ( Msg.ActiveMotion Motion.MoveDown )
-                 -- , onTouchEnd ( Msg.ActiveMotion Motion.None )
-                    ]
-                    [
-                    ]
+                    []
+                    []
                 ]
         )
 
@@ -329,7 +267,5 @@ btnRestart =
             , cursor = "pointer"
             , fontSize = Css.FsXXXLarge
         }
-        [ onClick Msg.Reload
-        ]
-        [ Html.text "Restart"
-        ]
+        [ onClick Msg.Reload ]
+        [ Html.text "Restart" ]
